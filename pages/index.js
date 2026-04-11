@@ -1,78 +1,92 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { useState } from 'react';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import HabitCard from '../components/HabitCard';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const initialHabits = [
+  { id: 1, name: 'Morning Stretch', category: 'Health', completed: false },
+  { id: 2, name: 'Read for 20 minutes', category: 'Learning', completed: false },
+  { id: 3, name: 'Review Class Notes', category: 'Study', completed: false },
+  { id: 4, name: 'Drink 8 glasses of water', category: 'Health', completed: false },
+];
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export default function Dashboard() {
+  const [habits, setHabits] = useState(initialHabits);
 
-export default function Home() {
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const completedCount = habits.filter((h) => h.completed).length;
+  const progressPercent = Math.round((completedCount / habits.length) * 100);
+
+  function toggleHabit(id) {
+    setHabits((prev) =>
+      prev.map((h) => (h.id === id ? { ...h, completed: !h.completed } : h))
+    );
+  }
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen flex flex-col bg-gray-950 text-white">
+      <Navbar />
+
+      <main className="flex-grow max-w-2xl mx-auto w-full px-4 py-10">
+        {/* Header */}
+        <p className="text-gray-400 text-sm mb-1">{today}</p>
+        <h1 className="text-3xl font-bold mb-2">
+          Good day, <span className="text-indigo-400">Manwer</span> 👋
+        </h1>
+        <p className="text-gray-400 mb-6">
+          You have completed{' '}
+          <span className="text-white font-semibold">
+            {completedCount} of {habits.length}
+          </span>{' '}
+          habits today.
+        </p>
+
+        {/* Progress Bar */}
+        <div className="mb-2 flex justify-between text-sm text-gray-400">
+          <span>Daily Progress</span>
+          <span>{progressPercent}%</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="w-full bg-gray-800 rounded-full h-3 mb-10">
+          <div
+            className="bg-indigo-500 h-3 rounded-full transition-all duration-500"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 gap-4 mb-10">
+          <div className="bg-gray-800 rounded-xl p-4 text-center border border-gray-700">
+            <p className="text-2xl font-bold text-indigo-400">{habits.length}</p>
+            <p className="text-xs text-gray-400 mt-1">Total Habits</p>
+          </div>
+          <div className="bg-gray-800 rounded-xl p-4 text-center border border-gray-700">
+            <p className="text-2xl font-bold text-green-400">{completedCount}</p>
+            <p className="text-xs text-gray-400 mt-1">Completed</p>
+          </div>
+          <div className="bg-gray-800 rounded-xl p-4 text-center border border-gray-700">
+            <p className="text-2xl font-bold text-yellow-400">
+              {habits.length - completedCount}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">Remaining</p>
+          </div>
+        </div>
+
+        {/* Habit List */}
+        <h2 className="text-lg font-semibold mb-4">Today&apos;s Habits</h2>
+        <div className="flex flex-col gap-3">
+          {habits.map((habit) => (
+            <HabitCard key={habit.id} habit={habit} onToggle={toggleHabit} />
+          ))}
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }
