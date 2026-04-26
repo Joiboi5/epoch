@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { getItem, setItem } from '../lib/storage';
 
 const MODES = {
   focus: { label: 'Focus', seconds: 25 * 60 },
@@ -15,7 +16,17 @@ export default function Timer() {
   const [sessions, setSessions] = useState(0);
   const intervalRef = useRef(null);
 
-  // Reset timer when mode changes
+  // Load session count from localStorage
+  useEffect(() => {
+    setSessions(getItem('epoch_total_sessions', 0));
+  }, []);
+
+  // Persist session count
+  useEffect(() => {
+    setItem('epoch_total_sessions', sessions);
+  }, [sessions]);
+
+  // Reset when mode changes
   useEffect(() => {
     setRunning(false);
     setTimeLeft(MODES[mode].seconds);
@@ -50,7 +61,7 @@ export default function Timer() {
   const seconds = String(timeLeft % 60).padStart(2, '0');
   const total = MODES[mode].seconds;
   const progress = ((total - timeLeft) / total) * 100;
-  const circumference = 2 * Math.PI * 45; // r=45
+  const circumference = 2 * Math.PI * 45;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-950 text-white">
@@ -62,7 +73,7 @@ export default function Timer() {
           Use Pomodoro sessions to stay deep in focus.
         </p>
 
-        {/* Mode Buttons */}
+        {/* Mode Selector */}
         <div className="flex gap-2 mb-10 flex-wrap justify-center">
           {Object.entries(MODES).map(([key, val]) => (
             <button
@@ -86,16 +97,7 @@ export default function Timer() {
             viewBox="0 0 100 100"
             style={{ transform: 'rotate(-90deg)' }}
           >
-            {/* Background circle */}
-            <circle
-              cx="50"
-              cy="50"
-              r="45"
-              fill="none"
-              stroke="#1f2937"
-              strokeWidth="7"
-            />
-            {/* Progress circle */}
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#1f2937" strokeWidth="7" />
             <circle
               cx="50"
               cy="50"
@@ -113,9 +115,7 @@ export default function Timer() {
             <span className="text-5xl font-bold font-mono">
               {minutes}:{seconds}
             </span>
-            <span className="text-xs text-gray-400 mt-1">
-              {MODES[mode].label}
-            </span>
+            <span className="text-xs text-gray-400 mt-1">{MODES[mode].label}</span>
           </div>
         </div>
 
@@ -123,7 +123,7 @@ export default function Timer() {
         <div className="flex gap-4 mb-10">
           <button
             onClick={() => setRunning((r) => !r)}
-            className="bg-indigo-600 hover:bg-indigo-500 transition px-10 py-2.5 rounded-full font-semibold text-base"
+            className="bg-indigo-600 hover:bg-indigo-500 transition px-10 py-2.5 rounded-full font-semibold"
           >
             {running ? 'Pause' : 'Start'}
           </button>
@@ -135,10 +135,17 @@ export default function Timer() {
           </button>
         </div>
 
-        {/* Session Count */}
-        <div className="bg-gray-800 rounded-xl px-6 py-4 border border-gray-700 text-center">
-          <p className="text-gray-400 text-sm">Focus sessions completed</p>
+        {/* Session Stats */}
+        <div className="bg-gray-800 rounded-xl px-6 py-4 border border-gray-700 text-center w-full max-w-xs">
+          <p className="text-gray-400 text-sm">Sessions completed today</p>
           <p className="text-3xl font-bold text-indigo-400 mt-1">{sessions}</p>
+          <div className="mt-3 w-full bg-gray-700 rounded-full h-2">
+            <div
+              className="bg-indigo-500 h-2 rounded-full transition-all"
+              style={{ width: `${Math.min((sessions / 8) * 100, 100)}%` }}
+            />
+          </div>
+          <p className="text-xs text-gray-500 mt-1">{sessions} / 8 daily goal</p>
         </div>
       </main>
 

@@ -1,6 +1,14 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
+const links = [
+  { href: '/', label: 'Dashboard' },
+  { href: '/habits', label: 'Habits' },
+  { href: '/timer', label: 'Timer' },
+  { href: '/analytics', label: 'Analytics' },
+  { href: '/settings', label: 'Settings' },
+];
+
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -11,25 +19,33 @@ export default function Navbar() {
           EPOCH
         </Link>
 
-        {/* Desktop Links */}
+        {/* Desktop */}
         <div className="hidden md:flex gap-6 text-sm font-medium">
-          <Link href="/" className="hover:text-indigo-400 transition-colors">Dashboard</Link>
-          <Link href="/habits" className="hover:text-indigo-400 transition-colors">Habits</Link>
-          <Link href="/timer" className="hover:text-indigo-400 transition-colors">Timer</Link>
+          {links.map((l) => (
+            <Link key={l.href} href={l.href} className="hover:text-indigo-400 transition-colors">
+              {l.label}
+            </Link>
+          ))}
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile hamburger */}
         <button className="md:hidden text-2xl" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? '✕' : '☰'}
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
       {menuOpen && (
         <div className="md:hidden mt-3 flex flex-col gap-3 text-sm font-medium px-2 pb-2">
-          <Link href="/" onClick={() => setMenuOpen(false)} className="hover:text-indigo-400">Dashboard</Link>
-          <Link href="/habits" onClick={() => setMenuOpen(false)} className="hover:text-indigo-400">Habits</Link>
-          <Link href="/timer" onClick={() => setMenuOpen(false)} className="hover:text-indigo-400">Timer</Link>
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              onClick={() => setMenuOpen(false)}
+              className="hover:text-indigo-400"
+            >
+              {l.label}
+            </Link>
+          ))}
         </div>
       )}
     </nav>
