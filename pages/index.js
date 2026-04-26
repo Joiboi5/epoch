@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import HabitCard from '../components/HabitCard';
@@ -21,28 +21,24 @@ function getTodayKey() {
 }
 
 export default function Dashboard() {
-  const [habits, setHabits] = useState(DEFAULT_HABITS);
-  const [displayName, setDisplayName] = useState('Manwer');
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = getItem('epoch_habits', DEFAULT_HABITS);
-    setHabits(saved);
+  const [habits, setHabits] = useState(() => getItem('epoch_habits', DEFAULT_HABITS));
+  const [displayName] = useState(() => {
     const settings = getItem('epoch_settings', { name: 'Manwer' });
-    setDisplayName(settings.name || 'Manwer');
-  }, []);
+    return settings.name || 'Manwer';
+  });
 
-  // Persist habits and save daily completion count
   useEffect(() => {
     setItem('epoch_habits', habits);
     const completions = getItem('epoch_daily_completions', {});
-    completions[getTodayKey()] = habits.filter((h) => h.completed).length;
+    completions[getTodayKey()] = habits.filter((habit) => habit.completed).length;
     setItem('epoch_daily_completions', completions);
   }, [habits]);
 
   function toggleHabit(id) {
     setHabits((prev) =>
-      prev.map((h) => (h.id === id ? { ...h, completed: !h.completed } : h))
+      prev.map((habit) =>
+        habit.id === id ? { ...habit, completed: !habit.completed } : habit
+      )
     );
   }
 
@@ -53,7 +49,7 @@ export default function Dashboard() {
     day: 'numeric',
   });
 
-  const completedCount = habits.filter((h) => h.completed).length;
+  const completedCount = habits.filter((habit) => habit.completed).length;
   const progressPercent =
     habits.length > 0 ? Math.round((completedCount / habits.length) * 100) : 0;
 
@@ -64,7 +60,7 @@ export default function Dashboard() {
       <main className="flex-grow max-w-2xl mx-auto w-full px-4 py-10">
         <p className="text-gray-400 text-sm mb-1">{today}</p>
         <h1 className="text-3xl font-bold mb-2">
-          Good day, <span className="text-indigo-400">{displayName}</span> 👋
+          Good day, <span className="text-indigo-400">{displayName}</span> {'👋'}
         </h1>
         <p className="text-gray-400 mb-6">
           You have completed{' '}
@@ -74,7 +70,6 @@ export default function Dashboard() {
           habits today.
         </p>
 
-        {/* Progress Bar */}
         <div className="mb-2 flex justify-between text-sm text-gray-400">
           <span>Daily Progress</span>
           <span>{progressPercent}%</span>
@@ -86,10 +81,8 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Weather Widget */}
         <WeatherWidget />
 
-        {/* Stats Row */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           <div className="bg-gray-800 rounded-xl p-4 text-center border border-gray-700">
             <p className="text-2xl font-bold text-indigo-400">{habits.length}</p>
@@ -107,7 +100,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Habit List */}
         <h2 className="text-lg font-semibold mb-4">Today&apos;s Habits</h2>
         <div className="flex flex-col gap-3">
           {habits.map((habit) => (

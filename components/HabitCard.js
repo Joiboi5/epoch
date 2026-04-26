@@ -2,9 +2,7 @@ export default function HabitCard({ habit, onToggle }) {
   return (
     <div
       className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-        habit.completed
-          ? 'border-indigo-500 bg-indigo-950'
-          : 'border-gray-700 bg-gray-800'
+        habit.completed ? 'border-indigo-500 bg-indigo-950' : 'border-gray-700 bg-gray-800'
       }`}
     >
       <div>
@@ -28,9 +26,7 @@ export default function HabitCard({ habit, onToggle }) {
             : 'border-gray-500 hover:border-indigo-400'
         }`}
       >
-        {habit.completed && (
-          <span className="text-white text-sm font-bold">✓</span>
-        )}
+        {habit.completed && <span className="text-white text-sm font-bold">✓</span>}
       </button>
     </div>
   );

@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { getItem, setItem } from '../lib/storage';
 
 export default function Settings() {
-  const [city, setCity] = useState('');
-  const [name, setName] = useState('');
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
+  const [city, setCity] = useState(() => {
     const settings = getItem('epoch_settings', { city: 'Toronto', name: 'Manwer' });
-    setCity(settings.city || 'Toronto');
-    setName(settings.name || 'Manwer');
-  }, []);
+    return settings.city || 'Toronto';
+  });
+  const [name, setName] = useState(() => {
+    const settings = getItem('epoch_settings', { city: 'Toronto', name: 'Manwer' });
+    return settings.name || 'Manwer';
+  });
+  const [saved, setSaved] = useState(false);
 
   function saveSettings() {
     setItem('epoch_settings', { city, name });
@@ -35,7 +35,6 @@ export default function Settings() {
         <h1 className="text-3xl font-bold mb-2">Settings</h1>
         <p className="text-gray-400 mb-8">Customize your Epoch experience.</p>
 
-        {/* Profile Settings */}
         <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 mb-6">
           <h2 className="text-base font-semibold mb-4">Profile</h2>
 
@@ -43,7 +42,7 @@ export default function Settings() {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(event) => setName(event.target.value)}
             className="w-full bg-gray-700 rounded-xl px-4 py-2.5 text-white outline-none focus:ring-2 focus:ring-indigo-500 transition mb-4"
           />
 
@@ -53,7 +52,7 @@ export default function Settings() {
           <input
             type="text"
             value={city}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={(event) => setCity(event.target.value)}
             placeholder="e.g. Toronto"
             className="w-full bg-gray-700 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-indigo-500 transition"
           />
@@ -62,15 +61,12 @@ export default function Settings() {
         <button
           onClick={saveSettings}
           className={`w-full transition rounded-xl py-2.5 font-semibold mb-10 ${
-            saved
-              ? 'bg-green-700 text-white'
-              : 'bg-indigo-600 hover:bg-indigo-500'
+            saved ? 'bg-green-700 text-white' : 'bg-indigo-600 hover:bg-indigo-500'
           }`}
         >
           {saved ? '✓ Settings Saved!' : 'Save Settings'}
         </button>
 
-        {/* Danger Zone */}
         <div className="bg-gray-800 rounded-2xl p-6 border border-red-900">
           <h2 className="text-base font-semibold mb-2 text-red-400">Danger Zone</h2>
           <p className="text-gray-400 text-sm mb-4">

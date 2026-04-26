@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { getItem } from '../lib/storage';
 
@@ -15,6 +16,7 @@ function getWeatherEmoji(main) {
     Mist: '🌫️',
     Fog: '🌫️',
   };
+
   return map[main] || '🌤️';
 }
 
@@ -28,7 +30,7 @@ export default function WeatherWidget() {
     const city = settings.city || 'Toronto';
 
     fetch(`/api/weather?city=${encodeURIComponent(city)}`)
-      .then((r) => r.json())
+      .then((response) => response.json())
       .then((data) => {
         if (data.error) setError(data.error);
         else setWeather(data);
@@ -50,18 +52,18 @@ export default function WeatherWidget() {
   if (error) {
     return (
       <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700 mb-8 text-gray-400 text-sm">
-        ⚠️ Weather unavailable.{' '}
-        <a href="/settings" className="text-indigo-400 underline">
+        {'⚠️'} Weather unavailable.{' '}
+        <Link href="/settings" className="text-indigo-400 underline">
           Set your city in Settings.
-        </a>
+        </Link>
       </div>
     );
   }
 
-  const BAD_CONDITIONS = ['Rain', 'Drizzle', 'Thunderstorm', 'Snow'];
+  const badConditions = ['Rain', 'Drizzle', 'Thunderstorm', 'Snow'];
   const isOutdoorFriendly =
     weather &&
-    !BAD_CONDITIONS.includes(weather.weather[0].main) &&
+    !badConditions.includes(weather.weather[0].main) &&
     weather.main.temp > 5;
 
   const suggestions = isOutdoorFriendly ? OUTDOOR_SUGGESTIONS : INDOOR_SUGGESTIONS;
@@ -70,9 +72,7 @@ export default function WeatherWidget() {
     <div className="bg-gray-800 rounded-2xl p-5 border border-gray-700 mb-8">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-gray-400 text-xs mb-1">
-            Current Weather — {weather.name}
-          </p>
+          <p className="text-gray-400 text-xs mb-1">Current Weather - {weather.name}</p>
           <p className="text-2xl font-bold">{Math.round(weather.main.temp)}°C</p>
           <p className="text-gray-300 text-sm capitalize">
             {weather.weather[0].description}
@@ -88,12 +88,12 @@ export default function WeatherWidget() {
             : '🏠 Better to keep habits indoors today.'}
         </p>
         <div className="flex flex-wrap gap-2">
-          {suggestions.map((s) => (
+          {suggestions.map((suggestion) => (
             <span
-              key={s}
+              key={suggestion}
               className="text-xs bg-indigo-950 border border-indigo-800 text-indigo-300 px-2 py-1 rounded-full"
             >
-              {s}
+              {suggestion}
             </span>
           ))}
         </div>

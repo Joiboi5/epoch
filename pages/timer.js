@@ -13,26 +13,13 @@ export default function Timer() {
   const [mode, setMode] = useState('focus');
   const [timeLeft, setTimeLeft] = useState(MODES.focus.seconds);
   const [running, setRunning] = useState(false);
-  const [sessions, setSessions] = useState(0);
+  const [sessions, setSessions] = useState(() => getItem('epoch_total_sessions', 0));
   const intervalRef = useRef(null);
 
-  // Load session count from localStorage
-  useEffect(() => {
-    setSessions(getItem('epoch_total_sessions', 0));
-  }, []);
-
-  // Persist session count
   useEffect(() => {
     setItem('epoch_total_sessions', sessions);
   }, [sessions]);
 
-  // Reset when mode changes
-  useEffect(() => {
-    setRunning(false);
-    setTimeLeft(MODES[mode].seconds);
-  }, [mode]);
-
-  // Countdown logic
   useEffect(() => {
     if (running) {
       intervalRef.current = setInterval(() => {
@@ -40,7 +27,7 @@ export default function Timer() {
           if (prev <= 1) {
             clearInterval(intervalRef.current);
             setRunning(false);
-            if (mode === 'focus') setSessions((s) => s + 1);
+            if (mode === 'focus') setSessions((count) => count + 1);
             return 0;
           }
           return prev - 1;
@@ -49,12 +36,19 @@ export default function Timer() {
     } else {
       clearInterval(intervalRef.current);
     }
+
     return () => clearInterval(intervalRef.current);
   }, [running, mode]);
 
   function reset() {
     setRunning(false);
     setTimeLeft(MODES[mode].seconds);
+  }
+
+  function changeMode(nextMode) {
+    setMode(nextMode);
+    setRunning(false);
+    setTimeLeft(MODES[nextMode].seconds);
   }
 
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
@@ -73,24 +67,22 @@ export default function Timer() {
           Use Pomodoro sessions to stay deep in focus.
         </p>
 
-        {/* Mode Selector */}
         <div className="flex gap-2 mb-10 flex-wrap justify-center">
-          {Object.entries(MODES).map(([key, val]) => (
+          {Object.entries(MODES).map(([key, value]) => (
             <button
               key={key}
-              onClick={() => setMode(key)}
+              onClick={() => changeMode(key)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition ${
                 mode === key
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
               }`}
             >
-              {val.label}
+              {value.label}
             </button>
           ))}
         </div>
 
-        {/* SVG Circle Timer */}
         <div className="relative w-56 h-56 mb-8">
           <svg
             className="w-full h-full"
@@ -119,10 +111,9 @@ export default function Timer() {
           </div>
         </div>
 
-        {/* Controls */}
         <div className="flex gap-4 mb-10">
           <button
-            onClick={() => setRunning((r) => !r)}
+            onClick={() => setRunning((value) => !value)}
             className="bg-indigo-600 hover:bg-indigo-500 transition px-10 py-2.5 rounded-full font-semibold"
           >
             {running ? 'Pause' : 'Start'}
@@ -135,7 +126,6 @@ export default function Timer() {
           </button>
         </div>
 
-        {/* Session Stats */}
         <div className="bg-gray-800 rounded-xl px-6 py-4 border border-gray-700 text-center w-full max-w-xs">
           <p className="text-gray-400 text-sm">Sessions completed today</p>
           <p className="text-3xl font-bold text-indigo-400 mt-1">{sessions}</p>

@@ -19,16 +19,18 @@ export default function Navbar() {
           EPOCH
         </Link>
 
-        {/* Desktop */}
         <div className="hidden md:flex gap-6 text-sm font-medium">
-          {links.map((l) => (
-            <Link key={l.href} href={l.href} className="hover:text-indigo-400 transition-colors">
-              {l.label}
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="hover:text-indigo-400 transition-colors"
+            >
+              {link.label}
             </Link>
           ))}
         </div>
 
-        {/* Mobile hamburger */}
         <button className="md:hidden text-2xl" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? '✕' : '☰'}
         </button>
@@ -36,14 +38,14 @@ export default function Navbar() {
 
       {menuOpen && (
         <div className="md:hidden mt-3 flex flex-col gap-3 text-sm font-medium px-2 pb-2">
-          {links.map((l) => (
+          {links.map((link) => (
             <Link
-              key={l.href}
-              href={l.href}
+              key={link.href}
+              href={link.href}
               onClick={() => setMenuOpen(false)}
               className="hover:text-indigo-400"
             >
-              {l.label}
+              {link.label}
             </Link>
           ))}
         </div>

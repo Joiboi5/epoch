@@ -13,18 +13,11 @@ const DEFAULT_HABITS = [
 ];
 
 export default function Habits() {
-  const [habits, setHabits] = useState(DEFAULT_HABITS);
+  const [habits, setHabits] = useState(() => getItem('epoch_habits', DEFAULT_HABITS));
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Health');
   const [error, setError] = useState('');
 
-  // Load from localStorage
-  useEffect(() => {
-    const saved = getItem('epoch_habits', DEFAULT_HABITS);
-    setHabits(saved);
-  }, []);
-
-  // Persist to localStorage whenever habits change
   useEffect(() => {
     setItem('epoch_habits', habits);
   }, [habits]);
@@ -34,6 +27,7 @@ export default function Habits() {
       setError('Please enter a habit name.');
       return;
     }
+
     setHabits((prev) => [
       ...prev,
       { id: Date.now(), name: name.trim(), category, completed: false },
@@ -43,7 +37,7 @@ export default function Habits() {
   }
 
   function deleteHabit(id) {
-    setHabits((prev) => prev.filter((h) => h.id !== id));
+    setHabits((prev) => prev.filter((habit) => habit.id !== id));
   }
 
   return (
@@ -54,7 +48,6 @@ export default function Habits() {
         <h1 className="text-3xl font-bold mb-2">Habits</h1>
         <p className="text-gray-400 mb-8">Create and manage your daily habits.</p>
 
-        {/* Add Form */}
         <div className="bg-gray-800 rounded-2xl p-6 mb-10 border border-gray-700">
           <h2 className="text-lg font-semibold mb-4">Add New Habit</h2>
           <div className="flex flex-col gap-3">
@@ -62,17 +55,19 @@ export default function Habits() {
               type="text"
               placeholder="e.g. Meditate for 10 minutes"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && addHabit()}
+              onChange={(event) => setName(event.target.value)}
+              onKeyDown={(event) => event.key === 'Enter' && addHabit()}
               className="bg-gray-700 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-indigo-500 transition"
             />
             <select
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(event) => setCategory(event.target.value)}
               className="bg-gray-700 rounded-xl px-4 py-2.5 text-white outline-none focus:ring-2 focus:ring-indigo-500 transition"
             >
-              {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+              {CATEGORIES.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
               ))}
             </select>
             {error && <p className="text-red-400 text-sm">{error}</p>}
@@ -85,7 +80,6 @@ export default function Habits() {
           </div>
         </div>
 
-        {/* List */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Your Habits</h2>
           <span className="text-sm text-gray-400">{habits.length} total</span>
