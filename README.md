@@ -1,76 +1,114 @@
-# Epoch - Group Project Phase 2
+# Epoch
 
-## Overview
+Epoch is a productivity web app built with Next.js, React, and Tailwind CSS. It combines habit tracking, a focus timer, lightweight personal settings, and a weather-aware dashboard to help users stay consistent day to day.
 
-Epoch is a productivity and habit-tracking web app made with Next.js and React. The purpose of the app is to help users manage daily habits, track progress, and stay focused using a timer.
+## Features
 
-## Main Features
-
-- A dashboard that shows daily progress
-- A habits page where users can add and remove habits
-- A focus timer with different modes
-- Reusable components for navigation, footer, and habit display
-- A responsive dark-themed layout
+- Dashboard with daily progress, habit stats, and a personalized greeting
+- Habit tracking with add, remove, and completion toggling
+- Pomodoro-style focus timer with focus, short break, and long break modes
+- Settings page for saving a display name and city
+- Weather widget powered by a local API route and user-selected city
+- Local persistence with `localStorage` for habits, settings, and session counts
+- Responsive navigation and shared layout components
 
 ## Routes
 
 - `/`
-  This is the main dashboard page. It shows the current date, progress bar, habit statistics, and the list of today’s habits.
+  Main dashboard with progress tracking, stats, today’s habits, and the weather widget.
 
 - `/habits`
-  This page allows the user to create new habits, view existing habits, and remove habits.
+  Manage habits by creating and deleting entries.
 
 - `/timer`
-  This page contains a Pomodoro-style focus timer with focus, short break, and long break modes.
+  Run focus sessions and track completed sessions.
+
+- `/settings`
+  Save profile preferences and reset browser-stored app data.
+
+- `/analytics`
+  Reserved for analytics, but currently incomplete.
 
 - `/api/hello`
-  This is a simple API route that returns JSON data.
+  Sample API endpoint.
 
-## Components
+- `/api/weather`
+  Weather endpoint used by the dashboard widget.
 
-- `Navbar.js`
-  The Navbar component is used for navigation between the Dashboard, Habits, and Timer pages. It also includes a mobile menu for smaller screens.
+## Tech Stack
 
-- `Footer.js`
-  The Footer component is displayed at the bottom of the app and gives the layout a complete structure.
-
-- `HabitCard.js`
-  The HabitCard component is used on the dashboard to display each habit and let the user mark it as completed.
-
-## State Management
-
-This project uses React hooks for state management.
-
-- `useState`
-  Used to manage habits, input values, timer mode, timer countdown, running state, and completed sessions.
-
-- `useEffect`
-  Used in the timer page to reset the timer when the selected mode changes and to run the countdown logic.
-
-- `useRef`
-  Used in the timer page to store the interval reference for the timer.
+- Next.js 16
+- React 19
+- Tailwind CSS 4
+- Recharts
 
 ## Project Structure
 
-- `pages/`
-  Contains the main routes of the application.
+```text
+epoch/
+  components/
+    AnalyticsChart.js
+    Footer.js
+    HabitCard.js
+    Navbar.js
+    WeatherWidget.js
+  lib/
+    storage.js
+  pages/
+    api/
+      hello.js
+      weather.js
+    _app.js
+    _document.js
+    analytics.js
+    habits.js
+    index.js
+    settings.js
+    timer.js
+```
 
-- `components/`
-  Contains reusable UI components.
+## State and Storage
 
-- `styles/`
-  Contains global styling for the project.
+The app uses React hooks for page state and `localStorage` for persistence.
 
-- `public/`
-  Contains static assets.
+- `epoch_habits`: saved habits and completion state
+- `epoch_settings`: saved display name and city
+- `epoch_total_sessions`: completed timer sessions
+- `epoch_daily_completions`: daily completion counts from the dashboard
 
-## How to Run the Project
+The helper functions for browser storage live in [`lib/storage.js`](./lib/storage.js).
 
-1. Open the project folder in CMD or VS Code.
-2. Run `npm install` to install dependencies.
-3. Run `npm run dev` to start the development server.
-4. Open `http://localhost:3000` in the browser.
+## Getting Started
 
-## Summary
+1. Install dependencies:
 
-This Phase 2 project demonstrates routing, reusable components, responsive styling, and state management. It builds the structure of the application and prepares it for future improvements in the next phase.
+```bash
+npm install
+```
+
+2. Start the development server:
+
+```bash
+npm run dev
+```
+
+3. Open `http://localhost:3000`.
+
+## Available Scripts
+
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
+
+## Current Status
+
+The app is functional for the dashboard, habits, timer, settings, and weather flow. The `analytics` page is currently empty, which causes `npm run build` to fail because Next.js expects every page file to export a valid React component.
+
+## Notes
+
+- User data is stored in the browser, so clearing local storage resets progress.
+- Weather suggestions depend on the city saved in Settings.
+- Some UI text currently shows character encoding issues in the source, which can be cleaned up separately.
